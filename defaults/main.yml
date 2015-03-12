@@ -152,3 +152,6 @@ gitolite_ssl_certificate: ""
 gitolite_ssl_certificate_key: ""
 #   used as -subj argument to openssl req when certificates are generated
 gitolite_ssl_certificate_subject: "/C=DE/ST=Hamburg/L=Hamburg/O=IT/CN={{ gitolite_httpd_sitename }}"
+
+# git-daemon
+gitolite_gitdaemon_enable: false

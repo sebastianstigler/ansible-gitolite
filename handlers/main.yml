@@ -14,3 +14,9 @@
   service:
     state=restarted
     name={{ gitolite_httpd_service }}
+
+
+# git-daemon service
+- name: sv restart git-daemon
+  tags: gitolite_gitdaemon
+  shell: sv restart {{ gitolite_gitdaemon_sv }}

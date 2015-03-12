@@ -131,3 +131,8 @@
   when:
     - gitolite_repositories|count != 0
     - gitolite_repositories_custom|count != 0
+
+# configure git-daemon for gitolite
+- include: gitdaemon.yml
+  tags: gitolite_gitdaemon
+  when: gitolite_gitdaemon_enable

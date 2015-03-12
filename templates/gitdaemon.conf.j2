@@ -1,0 +1,16 @@
+#!/bin/sh
+#   ____________________
+#  < Managed by Ansible >
+#   --------------------
+#          \   ^__^
+#           \  (oo)\_______
+#              (__)\       )\/\
+#                  ||----w |
+#                  ||     ||
+#
+
+exec 2>&1
+echo 'git-daemon starting.'
+exec chpst -u{{ gitolite_user_name }} \
+  "$(git --exec-path)"/git-daemon --verbose --reuseaddr \
+    --base-path={{ gitolite_user_home }}/repositories {{ gitolite_user_home }}/repositories

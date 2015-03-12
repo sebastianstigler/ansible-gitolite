@@ -1,0 +1,15 @@
+---
+- name: Install required packages for git-daemon
+  tags: gitolite_gitdaemon
+  action: "{{ ansible_pkg_mgr }} state=installed name={{ item }}"
+  with_items: gitolite_package_list_gitdaemon
+
+- name: Install git-daemon configuration
+  tags: gitolite_gitdaemon
+  notify: sv restart git-daemon
+  template:
+    src=gitdaemon.conf.j2
+    dest={{ gitolite_gitdaemon_conf }}
+    mode=0755
+    owner=0
+    group=0

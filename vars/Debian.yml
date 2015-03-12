@@ -14,3 +14,9 @@ gitolite_httpd_logs: /var/log/apache2
 gitolite_httpd_sites: /etc/apache2/sites-available
 gitolite_ssl_dir: /etc/ssl
 gitolite_https_htaccess_file: /etc/apache2/gitolite.passwd
+
+gitolite_package_list_gitdaemon:
+  - git-daemon-run
+
+gitolite_gitdaemon_conf: /etc/sv/git-daemon/run
+gitolite_gitdaemon_sv: git-daemon
