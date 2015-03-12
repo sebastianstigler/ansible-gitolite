@@ -66,6 +66,7 @@ gitolite_gitoliterc_enable_features:
   - git-config
   - daemon
   - gitweb
+  - htpasswd
 #    list of existing features disabled by default
 # - create
 # - fork
@@ -88,6 +89,10 @@ gitolite_gitoliterc_enable_features:
 # - continuation-lines
 # - keysubdirs-as-groups
 # - macros
+
+#   administrate htaccess file from gitolite
+#   require to enable the 'htpasswd' feature
+gitolite_gitoliterc_htpasswd_file: ''
 
 
 # gitolite repositories

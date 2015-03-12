@@ -58,6 +58,9 @@
 {% endfor %}
   ],
 
+{% if gitolite_gitoliterc_htpasswd_file != '' %}
+  HTPASSWD_FILE => '{{ gitolite_gitoliterc_htpasswd_file }}',
+{%- endif %}
 );
 
 1;
