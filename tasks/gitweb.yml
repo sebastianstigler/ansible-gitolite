@@ -1,0 +1,131 @@
+---
+- name: Install required packages for gitweb
+  tags: gitolite_gitweb
+  action: "{{ ansible_pkg_mgr }} state=installed name={{ item }}"
+  with_items: gitolite_package_list_gitweb
+
+- name: Add httpd service user to gitolite service group
+  tags: gitolite_gitweb
+  notify: service restart gitweb
+  user:
+    name={{ gitolite_gitweb_user_name }}
+    groups={{ gitolite_user_group }}
+    append=true
+
+
+# SSL
+- name: Install SSL certificate
+  tags: gitolite_gitweb
+  when: gitolite_ssl_certificate != "" and gitolite_ssl_certificate_key != ""
+  copy:
+    src={{ gitolite_ssl_certificate }}
+    dest={{ gitolite_ssl_dir }}/certs/{{ gitolite_ssl_certificate }}
+    mode=0644
+    owner=0
+    group=0
+
+- name: Install ssl certificate key
+  tags: gitolite_gitweb
+  when: gitolite_ssl_certificate_key != "" and gitolite_ssl_certificate != ""
+  copy:
+    src={{ gitolite_ssl_certificate_key }}
+    dest={{ gitolite_ssl_dir }}/private/{{ gitolite_ssl_certificate_key }}
+    mode=0640
+    owner=0
+    group=0
+
+- name: Generate SSL certificate
+  tags: gitolite_gitweb
+  when: gitolite_ssl_certificate == "" or gitolite_ssl_certificate_key == ""
+  command: openssl req
+        -new
+        -nodes
+        -x509
+        -subj {{ gitolite_ssl_certificate_subject }}
+        -days 3650
+        -keyout {{ gitolite_ssl_dir }}/private/{{ gitolite_gitweb_sitename }}.key
+        -out {{ gitolite_ssl_dir }}/certs/{{ gitolite_gitweb_sitename }}.crt
+        -extensions v3_ca
+      creates={{ gitolite_ssl_dir }}/certs/{{ gitolite_gitweb_sitename }}.crt
+
+
+# apache
+- name: Install gitweb document root directory
+  tags: gitolite_gitweb
+  file:
+    state=directory
+    dest={{ gitolite_gitweb_document_root }}/static
+    mode=0755
+    owner=0
+    group=0
+
+- name: Install gitweb.cgi
+  tags: gitolite_gitweb
+  copy:
+    src=gitweb.cgi
+    dest={{ gitolite_gitweb_document_root }}/{{ gitolite_gitweb_cgi }}
+    mode=0755
+    owner={{ gitolite_gitweb_user_name }}
+    group={{ gitolite_gitweb_user_group }}
+ 
+- name: Install gitweb.conf
+  tags: gitolite_gitweb
+  template:
+    src=gitweb.conf.j2
+    dest=/etc/gitweb.conf
+    mode=0644
+    owner=0
+    group=0
+
+- name: Create htaccess file
+  tags: gitolite_gitweb
+  file:
+    path={{ gitolite_https_htaccess_file }}
+    state=touch
+    mode=0644
+    owner={{ gitolite_user_name }}
+    group={{ gitolite_user_group }}
+
+- name: Install static files
+  tags: gitolite_gitweb
+  with_dict: gitolite_gitweb_static
+  copy:
+    src={{ item.value }}
+    dest={{ gitolite_gitweb_document_root }}/static/{{ item.value }}
+    mode=0644
+    owner={{ gitolite_gitweb_user_name }}
+    group={{ gitolite_gitweb_user_group }}
+
+- name: Install gitweb httpd configuration
+  tags: gitolite_gitweb
+  notify: service restart gitweb
+  template:
+    src=gitweb-site.conf.j2
+    dest={{ gitolite_gitweb_sites }}/{{ gitolite_gitweb_sitename }}.conf
+    mode=0644
+    owner=0
+    group=0
+
+- name: Enable gitweb site
+  tags: gitolite_gitweb
+  notify: service restart gitweb
+  file:
+    src={{ gitolite_gitweb_sites }}/{{ gitolite_gitweb_sitename }}.conf
+    dest={{ gitolite_gitweb_sites_enabled }}/{{ gitolite_gitweb_sitename }}.conf
+    state=link
+
+- name: Enable apache mods
+  tags: gitolite_gitweb
+  notify: service restart gitweb
+  with_items: gitolite_gitweb_apache_mods
+  file:
+    src={{ gitolite_gitweb_mods }}/{{ item }}.load
+    dest={{ gitolite_gitweb_mods_enabled }}/{{ item }}.load
+    state=link
+
+- name: Service enable httpd
+  tags: gitolite_gitweb
+  service:
+    state=started
+    name={{ gitolite_gitweb_service }}
+    enabled=true

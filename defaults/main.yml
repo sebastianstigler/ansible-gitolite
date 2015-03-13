@@ -155,3 +155,19 @@ gitolite_ssl_certificate_subject: "/C=DE/ST=Hamburg/L=Hamburg/O=IT/CN={{ gitolit
 
 # git-daemon
 gitolite_gitdaemon_enable: false
+
+# gitweb
+#   if gitolite_gitweb_enable == true
+gitolite_gitweb_enable: false
+gitolite_gitweb_document_root: /var/www/gitweb
+gitolite_gitweb_https_port: 443
+gitolite_gitweb_sitename: "{{ gitolite_hostname }}.{{ gitolite_domainname }}"
+gitolite_gitweb_site_title: "{{ gitolite_gitweb_sitename }} >> Repos"
+gitolite_gitweb_cgi: gitweb.cgi
+gitolite_gitweb_static:
+  favicon: git-favicon.png
+  logo: git-logo.png
+  css: gitweb.css
+  js: gitweb.js
+  logout: logout.html
+  login: login.html

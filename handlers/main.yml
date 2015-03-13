@@ -20,3 +20,11 @@
 - name: sv restart git-daemon
   tags: gitolite_gitdaemon
   shell: sv restart {{ gitolite_gitdaemon_sv }}
+
+
+ # apache server for gitweb
+- name: service restart gitweb
+  tags: gitolite_gitweb
+  service:
+    state=restarted
+    name={{ gitolite_gitweb_service }}

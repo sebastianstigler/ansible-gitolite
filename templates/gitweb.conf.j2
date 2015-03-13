@@ -1,0 +1,75 @@
+# directory to use for temp files
+$git_temp = "/tmp";
+
+# make nice URLs
+$feature{'pathinfo'}{'default'} = [1];
+
+$my_uri = "/";
+# target of the home link on top of all pages
+$home_link = $my_uri || "/";
+
+# stylesheet to use
+@stylesheets = ("static/{{ gitolite_gitweb_static.css }}");
+
+# javascript code for gitweb
+$javascript = "static/{{ gitolite_gitweb_static.js }}";
+
+# logo to use
+$logo = "static/{{ gitolite_gitweb_static.logo }}";
+
+# the 'favicon'
+$favicon = "static/{{ gitolite_gitweb_static.favicon }}";
+
+# This lets it make the URLs you see in the header
+@git_base_url_list = ('git://{{ gitolite_gitweb_sitename }}', 'ssh://{{ gitolite_user_name }}@{{ gitolite_gitweb_sitename }}');
+
+$site_name = "{{ gitolite_gitweb_site_title }}";
+$fallback_encoding = 'utf-8';
+
+$highlight_bin = "{{ gitolite_gitweb_highlight_bin }}";
+$feature{'highlight'}{'default'} = [1];
+
+$feature{'snapshot'}{'default'} = ['tgz', 'gzip', 'zip'];
+$feature{'snapshot'}{'override'} = 1;
+
+# git-diff-tree(1) options to use for generated patches
+#@diff_opts = ("-M");
+@diff_opts = ();
+if ($cgi->remote_user) {
+    $feature{'actions'}{'default'} = [('logout (' . $cgi->remote_user . ')', 'static/{{ gitolite_gitweb_static.logout }}', 'tree')];
+} else {
+    $feature{'actions'}{'default'} = [('login', 'static/{{ gitolite_gitweb_static.login }}', 'tree')];
+}
+
+# Per-repo authorization for gitweb using gitolite v3 access rules
+
+BEGIN {
+    $ENV{HOME} = "{{ gitolite_user_home }}";
+    $ENV{GL_BINDIR} = "{{ gitolite_install_dir }}";
+    $ENV{GL_LIBDIR} = "{{ gitolite_install_dir }}/lib";
+}
+
+# Pull in gitolite's perl API module.  Among other things, this also sets the
+# GL_REPO_BASE environment variable.
+use lib $ENV{GL_LIBDIR};
+use Gitolite::Easy;
+
+# Set projectroot for gitweb.  If you already set it earlier in gitweb.conf
+# you don't need this but please make sure the path you used is the same as
+# the value of GL_REPO_BASE in the 'gitolite query-rc -a' output above.
+$projectroot = $ENV{GL_REPO_BASE};
+
+# Now get the user name.  Unauthenticated clients will be deemed to be the
+# 'gitweb' user so make sure gitolite's conf file does not allow that user to
+# see anything sensitive.
+$ENV{GL_USER} = $cgi->remote_user || "gitweb";
+
+$export_auth_hook = sub {
+    my $repo = shift;
+    # gitweb passes us the full repo path; we need to strip the beginning and
+    # the end, to get the repo name as it is specified in gitolite conf
+    return unless $repo =~ s/^\Q$projectroot\E\/?(.+)\.git$/$1/;
+
+    # call Easy.pm's 'can_read' function
+    return can_read($repo);
+};

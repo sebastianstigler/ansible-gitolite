@@ -136,3 +136,8 @@
 - include: gitdaemon.yml
   tags: gitolite_gitdaemon
   when: gitolite_gitdaemon_enable
+#
+# configure gitweb for gitolite
+- include: gitweb.yml
+  tags: gitolite_gitweb
+  when: gitolite_gitweb_enable

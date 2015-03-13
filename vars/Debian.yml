@@ -12,6 +12,7 @@ gitolite_httpd_service: apache2
 gitolite_httpd_user_name: www-data
 gitolite_httpd_logs: /var/log/apache2
 gitolite_httpd_sites: /etc/apache2/sites-available
+
 gitolite_ssl_dir: /etc/ssl
 gitolite_https_htaccess_file: /etc/apache2/gitolite.passwd
 
@@ -20,3 +21,25 @@ gitolite_package_list_gitdaemon:
 
 gitolite_gitdaemon_conf: /etc/sv/git-daemon/run
 gitolite_gitdaemon_sv: git-daemon
+
+gitolite_package_list_gitweb:
+  - apache2
+  - openssl
+  - gitweb
+  - highlight
+  - markdown
+  - zip
+
+gitolite_gitweb_service: apache2
+gitolite_gitweb_user_name: www-data
+gitolite_gitweb_user_group: www-data
+gitolite_gitweb_logs: /var/log/apache2
+gitolite_gitweb_sites: /etc/apache2/sites-available
+gitolite_gitweb_sites_enabled: /etc/apache2/sites-enabled
+gitolite_gitweb_mods: /etc/apache2/mods-available
+gitolite_gitweb_mods_enabled: /etc/apache2/mods-enabled
+gitolite_gitweb_highlight_bin: /usr/bin/highlight
+gitolite_gitweb_apache_mods:
+  - rewrite
+  - authn_anon
+  - ssl
