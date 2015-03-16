@@ -94,6 +94,15 @@ gitolite_gitoliterc_enable_features:
 #   require to enable the 'htpasswd' feature
 gitolite_gitoliterc_htpasswd_file: ''
 
+# gitolite roles
+gitolite_roles:
+  - role: key-admin
+    members:
+      - id_rsa
+      - "{{ gitolite_user_name }}"
+  - role: repo-admin
+    members:
+      - "@key-admin"
 
 # gitolite repositories
 #   Repositories management will take place if both
@@ -105,7 +114,7 @@ gitolite_gitoliterc_htpasswd_file: ''
 gitolite_repositories:
   - repo: gitolite-admin
     admin:
-      users: ["id_rsa", "{{ gitolite_user_name }}"]
+      users: ["@key-admin"]
     write:
       options: []
       users: []

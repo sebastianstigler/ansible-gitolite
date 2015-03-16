@@ -62,6 +62,25 @@ repo {{ r.repo }}
 {%- endfor %}
 {%- endmacro %}
 
+{% macro iter_roles(roles) -%}
+{% for role in roles -%}
+{% if 'role' in role -%}
+{% if 'members' in role -%}
+{% if role.members|count > 0 -%}
+{% set create_role = true -%}
+{%- endif %}
+{%- endif %}
+{%- endif %}
+{% if create_role -%}
+{% set entry = "@" + role.role + " = " + role.members|join(" ") + "\n" -%}
+{{ entry }}
+
+{%- endif %}
+{%- endfor %}
+{%- endmacro %}
+
+# Roles
+{{ iter_roles(gitolite_roles) }}
 # Default repositories
 {{ iter_repos(gitolite_repositories) }}
 # Custom repositories
