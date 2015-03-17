@@ -6321,25 +6321,22 @@ sub git_summary {
 		insert_file("$projectroot/$project/README.html");
 		print "\n</div>\n"; # class="readme"
 	}
-        if (!$prevent_xss && !-s "$projectroot/$project/README.html") {
-            $file_name = "README.md";
-            my $proj_head_hash = git_get_head_hash($project);
-            my $readme_blob_hash = git_get_hash_by_path($proj_head_hash, "README.md", "blob");
-        
-            if ($readme_blob_hash) { # if README.md exists                                                                                                                                                      
-                print "<div class=\"title\">readme</div>\n";
-                print "<div class=\"readme\">"; # TODO find/create a better CSS class than page_body                                                                                                  
-        
-                my $cmd_markdownify = $GIT . " " . git_cmd() . " cat-file blob " . $readme_blob_hash . " | markdown |";
-                open FOO, $cmd_markdownify or die_error(500, "Open git-cat-file blob '$hash' failed");
-                while (<FOO>) {
-                    print $_;
-                }
-                close(FOO);
-        
-                print "</div>";
-            }
-        }
+		if (!$prevent_xss && !-s "$projectroot/$project/README.html") {
+			$file_name = "README.md";
+			my $proj_head_hash = git_get_head_hash($project);
+			my $readme_blob_hash = git_get_hash_by_path($proj_head_hash, "README.md", "blob");
+			if ($readme_blob_hash) { # if README.md exists
+				print "<div class=\"title\">readme</div>\n";
+				print "<div class=\"readme\">"; # TODO find/create a better CSS class than page_body
+				my $cmd_markdownify = $GIT . " " . git_cmd() . " cat-file blob " . $readme_blob_hash . " | markdown |";
+				open FOO, $cmd_markdownify or die_error(500, "Open git-cat-file blob '$hash' failed");
+				while (<FOO>) {
+					print $_;
+				}
+				close(FOO);
+				print "</div>";
+			}
+		}
 
 	# we need to request one more than 16 (0..15) to check if
 	# those 16 are all
