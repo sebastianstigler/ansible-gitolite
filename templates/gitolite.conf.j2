@@ -7,22 +7,22 @@
 #                  ||----w |
 #                  ||     ||
 #
-{% macro gitolite_repo(r) -%}
+{% macro gitolite_repo(r) %}
 repo {{ r.repo }}
 {% if 'admin' in r and r['admin']|count > 0 -%}
 {% if 'users' in r['admin'] and r['admin']['users']|count > 0 -%}
-{% set perma = "  RW+ = " + r['admin']['users']|join(" ") -%}
+{% set perma = "  RW+ = " + r['admin']['users']|join(" ") + "\n" -%}
 {%- endif %}
 {% if perma|count > 0 -%}
 {{ perma }}
 {%- endif %}
 {%- endif %}
-
-{% if 'write' in r and r['write']|count > 0 %}
+{# -#}
+{% if 'write' in r and r['write']|count > 0 -%}
 {% if 'options' in r['write'] and r['write']['options']|count > 0 and 'users' in r['write'] and r['write']['users']|count > 0 -%}
-{% set permw = "  RW " + r['write']['options']|join(" ") +  " = " + r['write']['users']|join(" ") -%}
+{% set permw = "  RW " + r['write']['options']|join(" ") +  " = " + r['write']['users']|join(" ") + "\n" -%}
 {% elif 'users' in r['write'] and r['write']['users']|count > 0 -%}
-{% set permw = "  RW = " + r['write']['users']|join(" ") -%}
+{% set permw = "  RW = " + r['write']['users']|join(" ") + "\n" -%}
 {% else -%}
 {% set permw = "" -%}
 {%- endif %}
@@ -30,18 +30,27 @@ repo {{ r.repo }}
 {{ permw }}
 {%- endif %}
 {%- endif %}
-
+{# -#}
 {% if 'read' in r and r['read']|count > 0 -%}
 {% if 'options' in r['read'] and r['read']['options']|count > 0 and 'users' in r['read'] and r['read']['users']|count > 0 -%}
-{% set permr = "  R " + r['write']['options']|join(" ") +  " = " + r['write']['users']|join(" ") -%}
+{% set permr = "  R " + r['write']['options']|join(" ") +  " = " + r['write']['users']|join(" ") + "\n" -%}
 {% elif 'users' in r['read'] and r['read']['users']|count > 0 -%}
-{% set permr = "  R = " + r['read']['users']|join(" ") -%}
+{% set permr = "  R = " + r['read']['users']|join(" ") + "\n" -%}
 {% else -%}
 {% set permr = "" -%}
 {%- endif %}
 {% if permr|count > 0 -%}
 {{ permr }}
 {%- endif %}
+{%- endif %}
+{# -#}
+{% if 'config' in r and r['config']|count > 0 -%}
+{% for cfg in r['config'] -%}
+{% if r['config'][cfg]|count > 0 -%}
+{% set rconf = "  config " + cfg + " = " + r['config'][cfg] + "\n" -%}
+{{ rconf }}
+{%- endif %}
+{%- endfor %}
 {%- endif %}
 {%- endmacro %}
 
@@ -56,6 +65,9 @@ repo {{ r.repo }}
 {%- endfor %}
 {%- endif %}
 {%- endfor %}
+{%- if 'config' in repo -%}
+{% set create_repo = true -%}
+{%- endif %}
 {% if create_repo -%}
 {{ gitolite_repo(repo) }}
 {%- endif %}
@@ -74,7 +86,6 @@ repo {{ r.repo }}
 {% if create_role -%}
 {% set entry = "@" + role.role + " = " + role.members|join(" ") + "\n" -%}
 {{ entry }}
-
 {%- endif %}
 {%- endfor %}
 {%- endmacro %}
