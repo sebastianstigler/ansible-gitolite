@@ -4,6 +4,15 @@
   action: "{{ ansible_pkg_mgr }} state=installed name={{ item }}"
   with_items: gitolite_package_list_gitweb
 
+- name: Install uml2html helper for markdown
+  tags: gitolite_gitweb
+  file:
+    src=uml2html
+    dest=/usr/local/bin/uml2html
+    mode=0755
+    owner=0
+    group=0
+
 - name: Add httpd service user to gitolite service group
   tags: gitolite_gitweb
   notify: service restart gitweb

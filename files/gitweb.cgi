@@ -6328,7 +6328,7 @@ sub git_summary {
 			if ($readme_blob_hash) { # if README.md exists
 				print "<div class=\"title\">readme</div>\n";
 				print "<div class=\"readme\">"; # TODO find/create a better CSS class than page_body
-				my $cmd_markdownify = $GIT . " " . git_cmd() . " cat-file blob " . $readme_blob_hash . " | markdown |";
+				my $cmd_markdownify = $GIT . " " . git_cmd() . " cat-file blob " . $readme_blob_hash . " | uml2html | markdown |";
 				open FOO, $cmd_markdownify or die_error(500, "Open git-cat-file blob '$hash' failed");
 				while (<FOO>) {
 					print $_;
