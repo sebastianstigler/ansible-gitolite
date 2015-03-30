@@ -6,7 +6,7 @@
 
 - name: Install uml2html helper for markdown
   tags: gitolite_gitweb
-  file:
+  copy:
     src=uml2html
     dest=/usr/local/bin/uml2html
     mode=0755
