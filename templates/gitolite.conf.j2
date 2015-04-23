@@ -9,6 +9,15 @@
 #
 {% macro gitolite_repo(r) %}
 repo {{ r.repo }}
+{% if 'wild_admin' in r and r['wild_admin']|count > 0 -%}
+{% if 'users' in r['wild_admin'] and r['wild_admin']['users']|count > 0 -%}
+{% set perma = "  C = " + r['wild_admin']['users']|join(" ") + "\n" -%}
+{%- endif %}
+{% if perma|count > 0 -%}
+{{ perma }}
+{%- endif %}
+{%- endif %}
+{# -#}
 {% if 'admin' in r and r['admin']|count > 0 -%}
 {% if 'users' in r['admin'] and r['admin']['users']|count > 0 -%}
 {% set perma = "  RW+ = " + r['admin']['users']|join(" ") + "\n" -%}
