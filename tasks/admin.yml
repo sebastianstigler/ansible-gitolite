@@ -25,7 +25,7 @@
 - name: Install gitolite SSH user accounts
   tags: gitolite
   register: gitolite_install_gitolite_ssh_user_accounts
-  with_items: gitolite_accounts_ssh
+  with_items: "{{ gitolite_accounts_ssh }}"
   copy:
     src=files/gitolite/users/ssh/{{ item }}.pub
     dest={{ gitolite_user_home }}/gitolite-admin/keydir/{{ item }}.pub

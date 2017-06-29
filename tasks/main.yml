@@ -127,7 +127,7 @@
 
 # manage gitolite installation
 - include: admin.yml
-  tags: gitolite
+  tags: [gitolite,newrepo]
   when:
     - gitolite_repositories|count != 0
     - gitolite_repositories_custom|count != 0
